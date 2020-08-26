@@ -126,19 +126,36 @@ class Model_2D_1hidden:
             s = "{:.4f}*x + {:.4f}*y + {:.4f} == 0,".format(xcoef,ycoef,const)
             print(s)
 
+    def export_params_flat(self):
+        params = [self.parametersA.flatten(),self.parametersB,self.parametersb1,np.array([self.parametersb2])]
+        return np.concatenate(params)
+
+
+def write_values(fn,values):
+    fp = open(fn,"w")
+    for g in values:
+        s = ""
+        for entry in g:
+            s += "{:.4f},".format(entry)
+        s = s[:-1]
+        s+= "\n"
+        fp.write(s)
+    fp.close()
 
 
 scale = 2*math.pi
 eps = 0.05
 #test_func = lambda x,y: math.sin(scale*(x+y))
 test_func = lambda x,y: math.sin(scale*x)+math.cos(scale*y)
-model = Model_2D_1hidden(height=70)
-model.lr = 0.005
+height = 70
+model = Model_2D_1hidden(height=height)
+model.lr = 0.006
 n_points = 40
 box_size = 1
 
 #train
 def train(n_epochs):
+    all_params = []
     for epoch in range(n_epochs):
         losses = []
         for x0 in np.linspace(-box_size,box_size,n_points):
@@ -151,8 +168,10 @@ def train(n_epochs):
                     dtheta += (-1*g*diff,)
                 model.step(dtheta)
                 losses.append(loss)
+        all_params.append(model.export_params_flat())
         print("Epoch {} average loss: {}".format(epoch,sum(losses)/len(losses)))
+    write_values("values.csv",all_params)
 
 
 #strain(300, 2500)
-train(300)
+train(150)
