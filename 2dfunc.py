@@ -1,18 +1,6 @@
 import math
 import numpy as np
-from numba import jit
 
-@jit(nopython=True)
-def forward_fast(param,z):
-    """
-    Forward (fast version)
-    """
-    A,B,b1,b2,t = param[0],param[1],param[2],param[3],param[4]
-    z = np.array(z)
-    z = A.dot(z) + b1
-    z = z * (z > t)
-    z = B.dot(z) + b2
-    return z
 
 class Model_2D_1hidden:
     """
