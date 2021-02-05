@@ -34,19 +34,15 @@ class Model_2D_1hidden:
         """
         return (x > t)
 
-    def forward(self,z,fast = False):
+    def forward(self,z):
         """
-        Evaluate the model at z. Accelerated by jit.
+        Evaluate the model at z.
         """
-        if fast:
-            params = (self.parametersA,self.parametersB,self.parametersb1,self.parametersb2,self.parameterst)
-            return forward_fast(params,z)
-        else:
-            z = np.array(z)
-            z = self.parametersA.dot(z) + self.parametersb1
-            z = self.sigma(z,self.parameterst)
-            z = self.parametersB.dot(z) + self.parametersb2
-            return z
+        z = np.array(z)
+        z = self.parametersA.dot(z) + self.parametersb1
+        z = self.sigma(z,self.parameterst)
+        z = self.parametersB.dot(z) + self.parametersb2
+        return z
 
     def grad(self,z):
         """
